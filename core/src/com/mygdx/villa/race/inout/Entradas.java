@@ -1,0 +1,114 @@
+package com.mygdx.villa.race.inout;
+
+import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.InputProcessor;
+import com.mygdx.villa.race.pantallas.PantallaMenu;
+import com.mygdx.villa.race.pantallas.PantallaNivelVilla;
+
+public class Entradas implements InputProcessor{
+	private	boolean abajo = false, arriba = false;
+	private boolean enter  = false;
+	private boolean w = false;
+	private boolean s = false;
+	PantallaMenu appMenu;
+	PantallaNivelVilla appVilla;
+
+/*	public Entradas(PantallaMenu appMenu,PantallaNivelVilla appVilla) {
+		this.appMenu=appMenu;
+		this.appVilla=appVilla;
+	}*/
+
+	
+	public boolean keyDown(int keycode) {
+		if(keycode == Keys.DOWN) {
+			abajo= true;
+		}
+		if(keycode == Keys.UP) {
+			arriba = true;
+		}
+		if(keycode == Keys.ENTER) {
+			enter = true;
+		}
+		if(keycode == Keys.W) {
+			w = true;
+		}
+		if(keycode == Keys.S) {
+			s = true;
+		}
+		return false;
+	}
+	@Override
+	public boolean keyUp(int keycode) {
+		if(keycode == Keys.DOWN) {
+			abajo= false;
+		}
+		if(keycode == Keys.UP) {
+			arriba = false; 
+		}
+		if(keycode == Keys.W) {
+			w = false;
+		}
+		if(keycode == Keys.S) {
+			s = false;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean keyTyped(char character) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean touchDragged(int screenX, int screenY, int pointer) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean mouseMoved(int screenX, int screenY) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean scrolled(int amount) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean isW() {
+		return w;
+	}
+
+	public boolean isS() {
+		return s;
+	}
+
+	public boolean isEnter() {
+		return enter;
+	}
+
+	public boolean isAbajo() {
+		return abajo;
+	}
+
+	public boolean isArriba() {
+		return arriba;
+	}
+
+
+}
