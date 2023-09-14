@@ -3,9 +3,12 @@ package com.mygdx.villa.race.pantallas;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
@@ -20,27 +23,29 @@ import com.mygdx.villa.race.objetosgame.Auto;
 import com.mygdx.villa.race.utiles.Config;
 import com.mygdx.villa.race.utiles.Recursos;
 import com.mygdx.villa.race.utiles.Render;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public class PantallaNivelVilla implements Screen {
 	//para el resize porque sino no me toma el Config.ANCHO y ALTO
 	int width= Config.ANCHO;
 	int height=Config.ALTO;
 	
+	//esto tendria que ir en la clase auto
 	//creo el auto y sus variables
 	Auto auto;
-	private float velocidad=0f;
-	private float aceleracion=25f;
-	private float frenado=30f;
-	private float velocidadMaxima=180f;
-	boolean acelerando = false;
-	boolean frenando = false;
 	private Music audioAcelerando;
+	
+	private Stage stage;
+	BitmapFont font = new BitmapFont();
+	Label velocidadLabel;
+	Label marchaLabel;
+	Label rpmLabel;
 	
 	//cargo para que me tome las entradas
 	Entradas entradas= new Entradas();
-	
-	Imagen autoTextura;
-	Imagen fondo;
+
 	
 	//para el mapa
 	private TiledMap mapa; //info del mapa
@@ -57,25 +62,34 @@ public class PantallaNivelVilla implements Screen {
 		//procesa las entradas 
 		Gdx.input.setInputProcessor(entradas);
 		
+		//creo el auto
+		auto = new Auto(0,15,256,120);
 		//carga audio del auto acelerando
 		audioAcelerando = Gdx.audio.newMusic(Gdx.files.internal("audio/acelerando.mp3"));
 		//lo pone el loop
 		audioAcelerando.setLooping(true);
 		
+		stage = new Stage(new ScreenViewport());
+        // Agrega los elementos del HUD al Stage
+        BitmapFont hudFont = new BitmapFont();
+        velocidadLabel = new Label("Velocidad: 0 km/h", new Label.LabelStyle(hudFont, Color.WHITE));
+        velocidadLabel.setPosition(10, Config.ALTO - 60);
+        stage.addActor(velocidadLabel);
+
+        marchaLabel = new Label("Marcha: 0", new Label.LabelStyle(hudFont, Color.WHITE));
+        marchaLabel.setPosition(10, Config.ALTO - 90);
+        stage.addActor(marchaLabel);
+
+        rpmLabel = new Label("RPM: 0", new Label.LabelStyle(hudFont, Color.WHITE));
+        rpmLabel.setPosition(10, Config.ALTO - 120);
+        stage.addActor(rpmLabel);
+	    
 		//cargo el archivo del mapa
-		mapa = new TmxMapLoader().load("mapas/villa/PRUEBA.tmx");
-		
+		mapa = new TmxMapLoader().load(Recursos.NIVELVILLA);
 		//creo el renderer del mapa
 		mapaRenderer = new OrthogonalTiledMapRenderer(mapa);
-		
-		
-		//creo el auto
-		auto = new Auto(0,15,256,120);
-		
 		//creo la camara
-		cam = new OrthographicCamera(Config.ANCHO,Config.ALTO);
-		
-		
+		cam = new OrthographicCamera(Config.ANCHO,Config.ALTO);	
 	}
 
 	@Override
@@ -104,51 +118,54 @@ public class PantallaNivelVilla implements Screen {
 
         cam.position.x = MathUtils.clamp(cam.position.x, minX, maxX);
         
-		if (entradas.isW()) {
-	        acelerando = true;
-	        auto.cambiarEstado(Auto.EstadoAuto.CORRIENDO);
-			audioAcelerando.play();	
-	    } else {
-	        auto.cambiarEstado(Auto.EstadoAuto.PARADO);
-	        acelerando = false;
-			audioAcelerando.stop();	
-	    }
-
-	    if (entradas.isS()) {
-	        frenando = true;
-	    } else {
-	        frenando = false;
-	    }
-	    //calculo para crear una aceleracion lo mas parecido a la realidad, Hay que realizar cambios
-        if (acelerando) {
-            velocidad += aceleracion * delta;
-        } else if (frenando) {
-            velocidad -= frenado * delta;
+        if (entradas.isW()) {
+            auto.cambiarEstado(Auto.EstadoAuto.CORRIENDO);
+            audioAcelerando.play();
+            auto.acelerar(delta);
+            auto.actualizarRPM();
+        } else {
+            auto.cambiarEstado(Auto.EstadoAuto.PARADO);
+            audioAcelerando.stop();
+            auto.actualizarRPM();
         }
 
-        if (velocidad > velocidadMaxima) {
-            velocidad = velocidadMaxima;
-        } else if (velocidad < 0) {
-            velocidad = 0;
+        if (entradas.isS()) {
+            auto.frenar(delta);
+            auto.actualizarRPM();
         }
+        if (!entradas.isW() && auto.getVelocidad() > 0) {
+            auto.parar(delta);
+        }
+        if(entradas.isE()) {
+        	auto.subirMarcha();
+        }
+        if(entradas.isQ()) {
+        	auto.bajarMarcha();
+        }
+	    
         //setea la posicion del auto siguiendo los calculos de la velocidad
-        auto.setPosition(auto.getX() + velocidad * delta);
-		
+        auto.setPosition(auto.getX() + auto.getVelocidad() * delta);
+	    
         //dibuja
         Render.batch.begin();
-
-
-		auto.updateAnimation(delta,velocidad);
+		auto.updateAnimation(delta, auto.getVelocidad());
 		auto.render();
 		Render.batch.end();
 		
+	    // Dibuja el HUD
+	    stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
+	    stage.draw();
+	    
+	    // Actualiza los datos en las etiquetas del HUD
+	    velocidadLabel.setText("Velocidad: " + auto.getKM() + " km/h");
+	    marchaLabel.setText("Marcha: " + auto.getMarcha());
+	    rpmLabel.setText("RPM: " + auto.getRPM());
 	}
 
 	@Override
 	public void resize(int width, int height) {
 		//el resize de la cam con la ventana
 		cam.setToOrtho(false, width, height);
-		
 	}
 
 	@Override
@@ -172,7 +189,7 @@ public class PantallaNivelVilla implements Screen {
 	@Override
 	public void dispose() {
 		mapa.dispose();
-
+		Render.batch.dispose();
 	}
 	
 }

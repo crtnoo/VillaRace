@@ -15,14 +15,27 @@ public class Auto {
         PARADO,
         CORRIENDO
     }
-
+    
+    //datos para la logica 
+    private int marcha;
+    private final  int numMarcha = 6;
+    private final int[] velocidadesMaximas = {0,60,100,150,180,220};
+	private float velocidad=0f;
+	private float km;
+	private float aceleracion=60f;
+	private float frenado=40f;
+	private float frenadoneutro=20f;
+	private float velocidadMaxima=220f;
+	boolean acelerando = false;
+	boolean frenando = false;
+    private float tiempo;
+    private float velocidadActual;
+    private float rpm;
+    private float rpmMaximo;
+	
+    //datos para la imagen del auto
     private Sprite spr;
     private float x, y, ancho, alto;
-    private int turbo;
-    private int marca;
-    private float tiempo;
-    int velocidadActual;
-    int velocidadMaxima = 100;
     private Animation<TextureRegion> corriendoAnimation;
     private TextureRegion[] regionsMovimiento_corriendo;
     private Animation<TextureRegion> paradoAnimation;
@@ -68,8 +81,7 @@ public class Auto {
         spr = new Sprite(paradoAnimation.getKeyFrame(0, true));
         spr.setPosition(x, y);
         spr.setSize(ancho, alto);
-
-        velocidadMaxima = 100;}
+        }
 
     public float getY() {
 		return y;
@@ -111,7 +123,7 @@ public class Auto {
         }
     }
 
-    // Metodo para cambiar el estado del auto
+   // Metodo para cambiar el estado del auto
     public void cambiarEstado(EstadoAuto nuevoEstado) {
         estadoActual = nuevoEstado;
         spr.setRegion(getAnimationEstadoActual().getKeyFrame(0));
@@ -129,4 +141,68 @@ public class Auto {
     public float getAncho() {
         return ancho;
     }
+
+    public float getVelocidad() {
+    	return velocidad;
+    }
+    
+    public void acelerar(float delta) {
+        if (marcha != 0) { // Solo se puede acelerar si no está en neutral
+            velocidad += aceleracion * delta;
+            km = velocidad /5;
+            // Limitar la velocidad según la marcha actual
+            if (velocidad > velocidadesMaximas[marcha]) {
+                velocidad = velocidadesMaximas[marcha];
+            }
+        }
+    }
+
+    public void frenar(float delta) {
+        velocidad -= frenado * delta;
+        km = velocidad /5;
+        if (velocidad < 0) {
+            velocidad = 0;
+        }
+    }
+
+    public void parar( float delta) {
+        velocidad -= frenadoneutro * delta;
+        if (velocidad < 0) {
+            velocidad = 0;
+        }
+    }
+    
+    public void subirMarcha() {
+        if (marcha < numMarcha && velocidad >= velocidadesMaximas[marcha]) { 
+            marcha++;
+        }
+    }
+
+    public void bajarMarcha() {
+        if (marcha > 1 && velocidad < velocidadesMaximas[marcha - 1]) {
+            marcha--;
+        }
+    }
+
+    public int getMarcha() {
+        return marcha;
+    }
+
+public void actualizarRPM() {
+    // vinculas el RPM a la velocidad y la marcha actual
+    rpm = velocidad * 10000 / velocidadesMaximas[marcha];
+    
+/*    // Limitar el RPM máximo
+    if (rpm > rpmMaximo) {
+        rpm = rpmMaximo;
+    } */
+}
+
+public float getKM() {
+	return km;
+}
+
+public float getRPM() {
+    return rpm;
+}
 }

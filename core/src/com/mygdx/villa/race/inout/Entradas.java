@@ -10,6 +10,8 @@ public class Entradas implements InputProcessor{
 	private boolean enter  = false;
 	private boolean w = false;
 	private boolean s = false;
+	private boolean e = false;
+	private boolean q = false;
 	PantallaMenu appMenu;
 	PantallaNivelVilla appVilla;
 
@@ -17,7 +19,6 @@ public class Entradas implements InputProcessor{
 		this.appMenu=appMenu;
 		this.appVilla=appVilla;
 	}*/
-
 	
 	public boolean keyDown(int keycode) {
 		if(keycode == Keys.DOWN) {
@@ -35,6 +36,12 @@ public class Entradas implements InputProcessor{
 		if(keycode == Keys.S) {
 			s = true;
 		}
+		if(keycode == Keys.E) {
+			e = true;
+		}
+		if(keycode == Keys.Q) {
+			q = true;
+		}
 		return false;
 	}
 	@Override
@@ -50,6 +57,12 @@ public class Entradas implements InputProcessor{
 		}
 		if(keycode == Keys.S) {
 			s = false;
+		}
+		if(keycode == Keys.E) {
+			e = false;
+		}
+		if(keycode == Keys.Q) {
+			q = false;
 		}
 		return false;
 	}
@@ -109,6 +122,11 @@ public class Entradas implements InputProcessor{
 	public boolean isArriba() {
 		return arriba;
 	}
-
+	public boolean isE() {
+		return e;
+	}
+	public boolean isQ() {
+		return q;
+	}
 
 }

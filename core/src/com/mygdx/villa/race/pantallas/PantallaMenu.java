@@ -16,6 +16,10 @@ public class PantallaMenu implements Screen{
 	//cargo la musica
 	private Music fondoMusicaMenu;
 	
+	//creo la imagen para mutear
+	private Imagen speakeron;
+	private Imagen speakeroff;
+	
 	//variables para el fadein de las pantallas
 	float a;
 	float contTiempo = 0, tiempoEspera = 5;
@@ -36,12 +40,24 @@ public class PantallaMenu implements Screen{
 	
 	@Override
 	public void show() {
-		
+		//cargo las entradas
 		Gdx.input.setInputProcessor(entradas);
 		
+		//cargo la musica de fondo
 		fondoMusicaMenu = Gdx.audio.newMusic(Gdx.files.internal("audio/jereklein_donde.mp3"));
 		fondoMusicaMenu.setLooping(true);
 		fondoMusicaMenu.play();
+		
+		//cargo las imagenes para mutear la musica
+		//cargo las imagenes del speaker
+		speakeron = new Imagen(Recursos.SPEAKERON);
+		speakeroff = new Imagen(Recursos.SPEAKEROFF);
+		speakeron.setSize(100, 100);
+		speakeroff.setSize(100, 100);
+		speakeron.setX(1000);
+		speakeroff.setX(1000);
+		speakeroff.setTransparencia(0);
+		
 		
 		fondo = new Imagen(Recursos.MENU);
 		fondo.setSize(Config.ANCHO, Config.ALTO);
@@ -59,15 +75,25 @@ public class PantallaMenu implements Screen{
 
 	@Override
 	public void render(float delta) {
+		//limpia
 		Render.limpiarPantalla(0, 0, 0);
+		
+		//suma para el fade
 		contFade();
+		
+		//dibuja
 		Render.batch.begin();
 		fondo.dibujar();
+		speakeron.dibujar();
+		speakeroff.dibujar();
 		for(int i = 0; i<opciones.length; i++) {
 			opciones[i].dibujar();
 		}
 		Render.batch.end();
+		
 		tiempo+=delta;
+		
+		//movimiento de la seleccion hacia arriba y abajo
 		if(entradas.isAbajo()) {
 			if(tiempo>0.2f) {
 				tiempo=0;
@@ -86,6 +112,8 @@ public class PantallaMenu implements Screen{
 				}
 			}
 		}
+		
+		//cambio de color de las palabras para saber que se esta seleccionando
 		for(int i=0; i<opciones.length;i++) {
 			if(i==(opc-1)) {
 				opciones[i].setColor(Color.YELLOW);
@@ -94,6 +122,7 @@ public class PantallaMenu implements Screen{
 			}
 		}
 		
+		//detecta que se eligio y manda a la pantalla de lo elegido
 		if(entradas.isEnter()) {
 			if(opc==1) {
 				Render.app.setScreen(new PantallaNivelVilla());
