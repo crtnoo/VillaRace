@@ -6,8 +6,8 @@ public class Recursos {
 	public final static String MENU = "fondos/pantallamenu.jpg";
 	public final static String PMENU = "fondos/menu.jpg";
 	public final static String VILLA = "fondos/pantallavilla.jpg";
-	public final static String SPEAKERON = "imagenes/speakeron.png";
-	public final static String SPEAKEROFF = "imagenes/speakeroff.png";
+	public final static String PHISTORIA = "fondos/fondomodohistoria.png";
+	public final static String MENUNIVELES = "fondos/menuniveles.png";
 	
 	//TEXTURAS AUTOS
 	public final static String PARADO="autos/autoParado.png";
@@ -15,7 +15,7 @@ public class Recursos {
 	
 	
 	//MAPAS TMX (TILED)
-	public final static String NIVELVILLA = "mapas/villa/PRUEBA.tmx";
+	public final static String NIVELVILLA = "mapas/villa/Villa.tmx";
 	
 	//AUDIO
 	public final static String MENUMUSICA = "audio/jereklein_donde";

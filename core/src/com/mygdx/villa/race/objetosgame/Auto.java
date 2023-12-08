@@ -5,6 +5,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.mygdx.villa.race.utiles.Recursos;
 import com.mygdx.villa.race.utiles.Render;
@@ -18,11 +20,11 @@ public class Auto {
     
     //datos para la logica 
     private int marcha;
-    private final  int numMarcha = 6;
+    private final  int numMarcha = 5;
     private final int[] velocidadesMaximas = {0,60,100,150,180,220};
 	private float velocidad=0f;
 	private float km;
-	private float aceleracion=60f;
+	private float aceleracion=50f;
 	private float frenado=40f;
 	private float frenadoneutro=20f;
 	private float velocidadMaxima=220f;
@@ -149,20 +151,20 @@ public class Auto {
     public void acelerar(float delta) {
         if (marcha != 0) { // Solo se puede acelerar si no está en neutral
             velocidad += aceleracion * delta;
-            km = velocidad /5;
             // Limitar la velocidad según la marcha actual
             if (velocidad > velocidadesMaximas[marcha]) {
                 velocidad = velocidadesMaximas[marcha];
             }
+            actualizarKM();
         }
     }
 
     public void frenar(float delta) {
         velocidad -= frenado * delta;
-        km = velocidad /5;
         if (velocidad < 0) {
             velocidad = 0;
         }
+        actualizarKM();
     }
 
     public void parar( float delta) {
@@ -170,11 +172,15 @@ public class Auto {
         if (velocidad < 0) {
             velocidad = 0;
         }
+        actualizarKM();
     }
     
     public void subirMarcha() {
         if (marcha < numMarcha && velocidad >= velocidadesMaximas[marcha]) { 
             marcha++;
+        }
+        if(marcha==5) {
+        	System.out.println("Ya no puede cambiar de marcha");
         }
     }
 
@@ -188,21 +194,20 @@ public class Auto {
         return marcha;
     }
 
-public void actualizarRPM() {
-    // vinculas el RPM a la velocidad y la marcha actual
-    rpm = velocidad * 10000 / velocidadesMaximas[marcha];
-    
-/*    // Limitar el RPM máximo
-    if (rpm > rpmMaximo) {
-        rpm = rpmMaximo;
-    } */
-}
+    public void actualizarKM() {
+    	km = velocidad /2f;
+	}
 
-public float getKM() {
+	public float getKM() {
 	return km;
-}
+	}
+	
+	//creo esta funcion para tomar la box del auto para la meta y obstaculos
+	public Rectangle getBoundingRectangle() {
+		return new Rectangle(x, y, ancho, alto);
+	}
 
-public float getRPM() {
-    return rpm;
-}
+	public void setVelocidad(int velocidad) {
+		this.velocidad = velocidad;
+	}
 }

@@ -2,6 +2,8 @@ package com.mygdx.villa.race;
 
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.mygdx.villa.race.pantallas.PantallaCarga;
 import com.mygdx.villa.race.pantallas.PantallaMenu;
@@ -11,12 +13,14 @@ public class VillaRace extends Game {
 	@Override
 	//crea la ventana del principio osea el juego //
 	public void create () {
+		//cargo la musica de fondo
 		Render.app = this;
 		Render.batch  = new SpriteBatch();
 		//this.setScreen(new PantallaCarga());
 		this.setScreen(new PantallaCarga());
+	
 	}
-
+    
 	@Override
 	//renderiza a cada rato (los FPS)
 	public void render () {
@@ -29,4 +33,5 @@ public class VillaRace extends Game {
 	public void dispose () {
 		Render.batch.dispose();
 	}
+	
 }

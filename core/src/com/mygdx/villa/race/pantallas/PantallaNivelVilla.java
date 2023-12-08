@@ -37,16 +37,20 @@ public class PantallaNivelVilla implements Screen {
 	Auto auto;
 	private Music audioAcelerando;
 	
+	//declaro las coordenadas de la meta
+	private float metaX;
+	
+	//creo el stage, la fuente y el label para el HUD
 	private Stage stage;
 	BitmapFont font = new BitmapFont();
 	Label velocidadLabel;
 	Label marchaLabel;
-	Label rpmLabel;
 	
 	//cargo para que me tome las entradas
 	Entradas entradas= new Entradas();
 
-	
+	//creo cont incio para animar el inicio
+	private float continicio;
 	//para el mapa
 	private TiledMap mapa; //info del mapa
 	private TiledMapRenderer mapaRenderer;
@@ -62,6 +66,8 @@ public class PantallaNivelVilla implements Screen {
 		//procesa las entradas 
 		Gdx.input.setInputProcessor(entradas);
 		
+		//declaro la coordenada de la meta
+		metaX = 3900;
 		//creo el auto
 		auto = new Auto(0,15,256,120);
 		//carga audio del auto acelerando
@@ -79,10 +85,6 @@ public class PantallaNivelVilla implements Screen {
         marchaLabel = new Label("Marcha: 0", new Label.LabelStyle(hudFont, Color.WHITE));
         marchaLabel.setPosition(10, Config.ALTO - 90);
         stage.addActor(marchaLabel);
-
-        rpmLabel = new Label("RPM: 0", new Label.LabelStyle(hudFont, Color.WHITE));
-        rpmLabel.setPosition(10, Config.ALTO - 120);
-        stage.addActor(rpmLabel);
 	    
 		//cargo el archivo del mapa
 		mapa = new TmxMapLoader().load(Recursos.NIVELVILLA);
@@ -94,6 +96,8 @@ public class PantallaNivelVilla implements Screen {
 
 	@Override
 	public void render(float delta) {
+		//pongo el contador inicial
+		continicio += delta;
 		//limpia la pantalla para renderizar las imagenes
 		Render.limpiarPantalla(1, 1, 1);
 		//updatea la posicion de la camara
@@ -118,20 +122,22 @@ public class PantallaNivelVilla implements Screen {
 
         cam.position.x = MathUtils.clamp(cam.position.x, minX, maxX);
         
+        //ANIMACION DEL INICIO
+        
+        
+        
+        if( continicio > 10) {
         if (entradas.isW()) {
             auto.cambiarEstado(Auto.EstadoAuto.CORRIENDO);
             audioAcelerando.play();
             auto.acelerar(delta);
-            auto.actualizarRPM();
         } else {
             auto.cambiarEstado(Auto.EstadoAuto.PARADO);
             audioAcelerando.stop();
-            auto.actualizarRPM();
         }
 
         if (entradas.isS()) {
             auto.frenar(delta);
-            auto.actualizarRPM();
         }
         if (!entradas.isW() && auto.getVelocidad() > 0) {
             auto.parar(delta);
@@ -142,7 +148,7 @@ public class PantallaNivelVilla implements Screen {
         if(entradas.isQ()) {
         	auto.bajarMarcha();
         }
-	    
+        }
         //setea la posicion del auto siguiendo los calculos de la velocidad
         auto.setPosition(auto.getX() + auto.getVelocidad() * delta);
 	    
@@ -159,7 +165,17 @@ public class PantallaNivelVilla implements Screen {
 	    // Actualiza los datos en las etiquetas del HUD
 	    velocidadLabel.setText("Velocidad: " + auto.getKM() + " km/h");
 	    marchaLabel.setText("Marcha: " + auto.getMarcha());
-	    rpmLabel.setText("RPM: " + auto.getRPM());
+	    
+	    //funcion de la distancia entre el jugador y la meta
+	    float distanciaX = Math.abs(auto.getX() - metaX);
+	    // maths.abs nos permite obtener un numero absoluto de la diferencia de distancia entre el auto y la meta
+	    
+	    if (distanciaX < 2) {
+	    	System.out.println("Ganaste");
+	    	// El jugador ha alcanzado la meta en la coordenada X
+	        // acciones relacionadas con la victoria del jugador aquí
+	    }
+	    
 	}
 
 	@Override

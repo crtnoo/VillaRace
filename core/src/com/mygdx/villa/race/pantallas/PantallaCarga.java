@@ -1,6 +1,8 @@
 package com.mygdx.villa.race.pantallas;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.mygdx.villa.race.elementos.Imagen;
 import com.mygdx.villa.race.utiles.Config;
 import com.mygdx.villa.race.utiles.Recursos;
@@ -8,17 +10,21 @@ import com.mygdx.villa.race.utiles.Render;
 
 
 public class PantallaCarga implements Screen {
-	Imagen fondo;
-	boolean FadeInTerminado = false, termina = false;
-	float a = 0;
-	float contTiempo= 0, tiempoEspera = 5;
-	float contTiempoT=0, tiempoTermina= 5;
+	private Imagen fondo;
+	private boolean FadeInTerminado = false, termina = false;
+	private float a = 0;
+	private float contTiempo= 0, tiempoEspera = 10;
+	private float contTiempoT=0, tiempoTermina= 10;
+	private Music fondoMusicaCarga;
 	
 	@Override
 	public void show() {
 		fondo = new Imagen(Recursos.CARGA);
 		fondo.setSize(Config.ANCHO, Config.ALTO);
 		fondo.setTransparencia(a);
+		
+		fondoMusicaCarga = Gdx.audio.newMusic(Gdx.files.internal("audio/PantallaCarga.mp3"));
+		fondoMusicaCarga.play();
 	}
 
 	@Override
@@ -83,7 +89,7 @@ public class PantallaCarga implements Screen {
 	@Override
 	public void dispose() {
 		Render.batch.dispose();
-		
+		fondoMusicaCarga.dispose();
 	}
 
 }

@@ -2,7 +2,9 @@ package com.mygdx.villa.race.pantallas;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
+import com.mygdx.villa.race.VillaRace;
 import com.mygdx.villa.race.elementos.Imagen;
 import com.mygdx.villa.race.elementos.Texto;
 import com.mygdx.villa.race.inout.Entradas;
@@ -12,7 +14,7 @@ import com.mygdx.villa.race.utiles.Recursos;
 import com.mygdx.villa.race.utiles.Render;
 
 
-public class PantallaMenu implements Screen{
+public class PantallaMenuOnline implements Screen{
 	//cargo la musica	
 	//variables para el fadein de las pantallas
 	float a;
@@ -21,7 +23,7 @@ public class PantallaMenu implements Screen{
 	
 	//variables para las opciones
 	Texto opciones[] = new Texto[3];
-	String textos[] = {"MODO ONLINE","AJUSTES","SALIR"};
+	String textos[] = {"MODO HISTORIA","MODO ONLINE","AJUSTES","SALIR"};
 	Imagen fondo;
 	Texto p;
 	
@@ -108,12 +110,16 @@ public class PantallaMenu implements Screen{
 		//detecta que se eligio y manda a la pantalla de lo elegido
 		if(entradas.isEnter()) {
 			if(opc==1) {
-				Render.app.setScreen(new PantallaMenuOnline());
+				Render.app.setScreen(new PantallaNivelVilla());
+				controladorMusica.detenerMusica();
 			}
 			if(opc==2) {
 //				Render.app.setScreen(null);
 			}
 			if(opc==3) {
+//			Render.app.setScreen(null);
+		}
+			if(opc==4) {
 			Render.app.dispose();
 		}
 		}
